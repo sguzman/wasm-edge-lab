@@ -32,18 +32,12 @@ pub fn run_service(name: &str, config: &ServiceConfig, base_dir: &Path) -> anyho
         let host_path = base_dir.join(host_dir);
         // Ensure host path exists
         std::fs::create_dir_all(&host_path)?;
-        tracing::info!("Mounting {} to {}", host_path.display(), guest_dir);
-        wasi_env_builder.map_dir(guest_dir, host_path)?;
+        let abs_host_path = std::fs::canonicalize(&host_path)?;
+        tracing::info!("Mounting {} to {}", abs_host_path.display(), guest_dir);
+        wasi_env_builder = wasi_env_builder.map_dir(guest_dir, abs_host_path)?;
     }
 
-    let mut wasi_env = wasi_env_builder.build()?;
-    
-    let import_object = wasi_env.import_object(&mut store, &module)?;
-
-    let instance = wasmer::Instance::new(&mut store, &module, &import_object)?;
-
-    // Initialize WASI environment for the instance
-    wasi_env.initialize(&mut store, instance.clone())?;
+    let (instance, _wasi_env) = wasi_env_builder.instantiate(module, &mut store)?;
 
     // Find the entrypoint. By default, it's `_start`.
     let start_func = instance.exports.get_function("_start")?;
@@ -61,6 +55,9 @@ pub fn run_service(name: &str, config: &ServiceConfig, base_dir: &Path) -> anyho
                     }
                     WasiError::UnknownWasiVersion => {
                         tracing::error!("Unknown WASI version for service {}", name);
+                    }
+                    other => {
+                        tracing::error!("Service {} returned a WASI error: {:?}", name, other);
                     }
                 }
             } else {

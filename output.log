@@ -1,0 +1,31 @@
+[1m[92m   Compiling[0m wasicell-host v0.1.0 (/win/linux/Code/rust/wasm-edge-lab/crates/wasicell-host)
+[1m[91merror[E0433][0m[1m: cannot find `EnvFilter` in `tracing_subscriber`[0m
+   [1m[94m--> [0mcrates/wasicell-host/src/main.rs:28:46
+    [1m[94m|[0m
+[1m[94m 28[0m [1m[94m|[0m         .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
+    [1m[94m|[0m                                              [1m[91m^^^^^^^^^[0m [1m[91mcould not find `EnvFilter` in `tracing_subscriber`[0m
+    [1m[94m|[0m
+[1m[92mnote[0m: found an item that was configured out
+   [1m[94m--> [0m/home/admin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-subscriber-0.3.23/src/lib.rs:239:21
+    [1m[94m|[0m
+[1m[94m238[0m [1m[94m|[0m     #![all(feature = "env-filter", feature = "std")]
+    [1m[94m|[0m            [1m[94m----------------------[0m [1m[94mthe item is gated behind the `env-filter` feature[0m
+[1m[94m239[0m [1m[94m|[0m     pub use filter::EnvFilter;
+    [1m[94m|[0m                     [1m[92m^^^^^^^^^[0m
+
+[1m[91merror[E0599][0m[1m: no method named `with_env_filter` found for struct `SubscriberBuilder<N, E, F, W>` in the current scope[0m
+  [1m[94m--> [0mcrates/wasicell-host/src/main.rs:28:10
+   [1m[94m|[0m
+[1m[94m27[0m [1m[94m|[0m [1m[94m/[0m     tracing_subscriber::fmt()
+[1m[94m28[0m [1m[94m|[0m [1m[94m|[0m         .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
+   [1m[94m|[0m [1m[94m|_________-[0m[1m[91m^^^^^^^^^^^^^^^[0m
+   [1m[94m|[0m
+[1m[96mhelp[0m: there is a method `with_file` with a similar name
+   [1m[94m|[0m
+[1m[94m28[0m [91m- [0m        .[91mwith_env_filter[0m(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
+[1m[94m28[0m [92m+ [0m        .[92mwith_file[0m(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
+   [1m[94m|[0m
+
+[1mSome errors have detailed explanations: E0433, E0599.[0m
+[1mFor more information about an error, try `rustc --explain E0433`.[0m
+[1m[91merror[0m: could not compile `wasicell-host` (bin "wasicell-host") due to 2 previous errors

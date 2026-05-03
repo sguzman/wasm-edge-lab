@@ -24,7 +24,9 @@ enum Commands {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
+        .init();
 
     let cli = Cli::parse();
 
@@ -42,21 +44,10 @@ async fn main() -> anyhow::Result<()> {
                 tracing::info!("Running all services from manifest");
                 for (name, config) in &app_manifest.service {
                     tracing::info!("Starting service: {}", name);
-                    // For now, we'll run sequentially if there are multiple, or we can spawn threads.
-                    // Given wasmer's synchronous run (unless using async extensions), spawning threads is better.
-                    let name = name.clone();
-                    let config = config.clone();
                     let base_dir = manifest.parent().unwrap_or(std::path::Path::new(".")).to_path_buf();
-                    std::thread::spawn(move || {
-                        if let Err(e) = runtime::run_service(&name, &config, &base_dir) {
-                            tracing::error!("Service {} failed: {:?}", name, e);
-                        }
-                    });
-                }
-                
-                // Keep the main thread alive since we spawn threads for services
-                loop {
-                    std::thread::sleep(std::time::Duration::from_secs(1));
+                    if let Err(e) = runtime::run_service(&name, config, &base_dir) {
+                        tracing::error!("Service {} failed: {:?}", name, e);
+                    }
                 }
             }
         }
