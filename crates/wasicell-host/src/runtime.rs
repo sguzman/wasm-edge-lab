@@ -20,7 +20,14 @@ pub fn run_service(name: &str, config: &ServiceConfig, base_dir: &Path) -> anyho
 
     tracing::info!("Configuring WASIX environment for {}", name);
     
-    let mut wasi_env_builder = WasiEnv::builder(name);
+    use std::sync::Arc;
+    use wasmer_wasix::virtual_fs::host_fs::FileSystem as HostFs;
+
+    let fs = Arc::new(HostFs::new(tokio::runtime::Handle::current(), "/").unwrap());
+    
+    let mut wasi_env_builder = WasiEnv::builder(name)
+        .engine(store.engine().clone())
+        .fs(fs as Arc<dyn wasmer_wasix::virtual_fs::FileSystem + Send + Sync>);
 
     // Inject env vars
     for (k, v) in &config.env {
@@ -31,6 +38,7 @@ pub fn run_service(name: &str, config: &ServiceConfig, base_dir: &Path) -> anyho
     for (host_dir, guest_dir) in &config.mounts {
         let host_path = base_dir.join(host_dir);
         std::fs::create_dir_all(&host_path)?;
+        let host_path = host_path.canonicalize()?; // use absolute path for map_dir with HostFs Rooted at /
         tracing::info!("Mounting {} to {}", host_path.display(), guest_dir);
         wasi_env_builder = wasi_env_builder.map_dir(guest_dir, &host_path)?;
     }
