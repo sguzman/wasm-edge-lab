@@ -31,9 +31,8 @@ pub fn run_service(name: &str, config: &ServiceConfig, base_dir: &Path) -> anyho
     for (host_dir, guest_dir) in &config.mounts {
         let host_path = base_dir.join(host_dir);
         std::fs::create_dir_all(&host_path)?;
-        let abs_host_path = std::fs::canonicalize(&host_path)?;
-        tracing::info!("Mounting {} to {}", abs_host_path.display(), guest_dir);
-        wasi_env_builder = wasi_env_builder.map_dir(guest_dir, &abs_host_path)?;
+        tracing::info!("Mounting {} to {}", host_path.display(), guest_dir);
+        wasi_env_builder = wasi_env_builder.map_dir(guest_dir, &host_path)?;
     }
 
     let (instance, _wasi_env) = wasi_env_builder.instantiate(module, &mut store)?;
