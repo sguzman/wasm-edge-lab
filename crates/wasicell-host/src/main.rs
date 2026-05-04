@@ -42,11 +42,29 @@ async fn main() -> anyhow::Result<()> {
                 }
             } else {
                 tracing::info!("Running all services from manifest");
-                for (name, config) in &app_manifest.service {
-                    tracing::info!("Starting service: {}", name);
+                let mut set = tokio::task::JoinSet::new();
+
+                for (name, config) in app_manifest.service {
+                    let name = name.clone();
+                    let config = config.clone();
                     let base_dir = manifest.parent().unwrap_or(std::path::Path::new(".")).to_path_buf();
-                    if let Err(e) = runtime::run_service(&name, config, &base_dir) {
-                        tracing::error!("Service {} failed: {:?}", name, e);
+                    
+                    set.spawn_blocking(move || {
+                        tracing::info!("Starting service: {}", name);
+                        if let Err(e) = runtime::run_service(&name, &config, &base_dir) {
+                            tracing::error!("Service {} failed: {:?}", name, e);
+                            Err(e)
+                        } else {
+                            Ok(())
+                        }
+                    });
+                }
+
+                while let Some(res) = set.join_next().await {
+                    match res {
+                        Ok(Ok(_)) => {},
+                        Ok(Err(e)) => tracing::error!("Service task failed: {:?}", e),
+                        Err(e) => tracing::error!("Task join error: {:?}", e),
                     }
                 }
             }

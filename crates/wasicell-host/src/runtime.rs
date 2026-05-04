@@ -22,11 +22,32 @@ pub fn run_service(name: &str, config: &ServiceConfig, base_dir: &Path) -> anyho
     
     use std::sync::Arc;
     use wasmer_wasix::virtual_fs::host_fs::FileSystem as HostFs;
+    use wasmer_wasix::runtime::task_manager::tokio::TokioTaskManager;
+    use wasmer_wasix::runtime::PluggableRuntime;
+    use virtual_net::host::LocalNetworking;
 
+    let rt = Arc::new(TokioTaskManager::new(tokio::runtime::Handle::current()));
+    let mut runtime = PluggableRuntime::new(rt);
+    runtime.set_networking_implementation(LocalNetworking::default());
+    runtime.set_engine(store.engine().clone());
+    
     let fs = Arc::new(HostFs::new(tokio::runtime::Handle::current(), "/").unwrap());
     
+    use wasmer_wasix::capabilities::{Capabilities, CapabilityThreadingV1};
+    
+    let capabilities = Capabilities {
+        insecure_allow_all: true,
+        threading: CapabilityThreadingV1 {
+            max_threads: Some(10),
+            enable_asynchronous_threading: true,
+            ..Default::default()
+        },
+        ..Capabilities::default()
+    };
+
     let mut wasi_env_builder = WasiEnv::builder(name)
-        .engine(store.engine().clone())
+        .runtime(Arc::new(runtime))
+        .capabilities(capabilities)
         .fs(fs as Arc<dyn wasmer_wasix::virtual_fs::FileSystem + Send + Sync>);
 
     // Inject env vars
@@ -34,15 +55,22 @@ pub fn run_service(name: &str, config: &ServiceConfig, base_dir: &Path) -> anyho
         wasi_env_builder.add_env(k, v);
     }
 
+    // Configure networking
+    if let Some(net_config) = &config.network {
+        tracing::info!("Configuring network: listen on {}", net_config.listen);
+        wasi_env_builder.add_env("LISTEN_ADDR", &net_config.listen);
+    }
+
     // Mount directories
     for (host_dir, guest_dir) in &config.mounts {
         let host_path = base_dir.join(host_dir);
         std::fs::create_dir_all(&host_path)?;
-        let host_path = host_path.canonicalize()?; // use absolute path for map_dir with HostFs Rooted at /
+        let host_path = host_path.canonicalize()?;
         tracing::info!("Mounting {} to {}", host_path.display(), guest_dir);
         wasi_env_builder = wasi_env_builder.map_dir(guest_dir, &host_path)?;
     }
 
+    tracing::info!("Instantiating module for {}", name);
     let (instance, _wasi_env) = wasi_env_builder.instantiate(module, &mut store)?;
 
     // Find the entrypoint. By default, it's `_start`.

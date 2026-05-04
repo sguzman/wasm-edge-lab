@@ -1,0 +1,7 @@
+[package]
+name = "text-api"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+wasix = "0.11.0"

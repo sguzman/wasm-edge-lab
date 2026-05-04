@@ -1,0 +1,66 @@
+[1m[92m    Finished[0m ]8;;https://doc.rust-lang.org/cargo/reference/profiles.html#default-profiles\`dev` profile [unoptimized + debuginfo]]8;;\ target(s) in 0.18s
+[1m[92m     Running[0m `target/debug/wasicell-host run examples/app.toml text_api`
+[2m2026-05-04T17:23:00.406575Z[0m [32m INFO[0m [2mwasicell_host[0m[2m:[0m Running single service: text_api
+[2m2026-05-04T17:23:00.406601Z[0m [32m INFO[0m [2mwasicell_host::runtime[0m[2m:[0m Initializing Wasmer store for text_api
+[2m2026-05-04T17:23:00.406698Z[0m [32m INFO[0m [2mwasicell_host::runtime[0m[2m:[0m Loading module from: examples/../target/wasm32-wasmer-wasi/debug/text-api.wasm
+[2m2026-05-04T17:23:01.168777Z[0m [32m INFO[0m [2mwasicell_host::runtime[0m[2m:[0m Configuring WASIX environment for text_api
+[2m2026-05-04T17:23:01.169233Z[0m [32m INFO[0m [2mwasicell_host::runtime[0m[2m:[0m Configuring network: listen on 127.0.0.1:8787
+[2m2026-05-04T17:23:01.169251Z[0m [32m INFO[0m [2mwasicell_host::runtime[0m[2m:[0m Instantiating module for text_api
+[2m2026-05-04T17:23:01.174968Z[0m [32m INFO[0m [2mwasicell_host::runtime[0m[2m:[0m Running text_api
+Text API guest starting on 127.0.0.1:8787...
+Listening on 127.0.0.1:8787...
+Received: Hello WASIX world
+
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)
+Error: Operation timed out (os error 73)

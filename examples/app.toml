@@ -1,6 +1,9 @@
 [service.file_worker]
-module = "../target/wasm32-wasip1/debug/file-worker.wasm"
-env = { RUST_LOG = "info" }
+module = "../target/wasm32-wasmer-wasi/debug/file-worker.wasm"
+env = { LOG_LEVEL = "info" }
+mounts = { "./data" = "/data" }
 
-[service.file_worker.mounts]
-"/tmp" = "/data"
+[service.text_api]
+module = "../target/wasm32-wasmer-wasi/debug/text-api.wasm"
+env = { LISTEN_ADDR = "127.0.0.1:8787" }
+network = { listen = "127.0.0.1:8787" }

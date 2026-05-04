@@ -11,4 +11,5 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tokio = { version = "1.34", features = ["full"] }
 wasmer = "7.1.0"
-wasmer-wasix = "0.701.0"
+wasmer-wasix = { version = "0.701.0", features = ["host-vnet", "sys-thread"] }
+virtual-net = "0.701.0"
